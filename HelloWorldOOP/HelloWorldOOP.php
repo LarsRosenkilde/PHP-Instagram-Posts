@@ -9,3 +9,4 @@ class HelloWorld {
 if (!count(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS))) {
     HelloWorld::sayHello();
 }
+
