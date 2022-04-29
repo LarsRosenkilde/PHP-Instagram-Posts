@@ -1,8 +1,6 @@
 <?php
 
-require_once "ShopifyOrderManagement.php";
-require_once "OrderProcessing.php";
-
+require_once "FtpTransfer_0.php";
 
 class FileTransferProtocol extends SuperClass {
     /*
@@ -42,23 +40,15 @@ class FileTransferProtocol extends SuperClass {
         }
     }
 
-    private function endsWith( $haystack, $needle ) {
-        $length = strlen( $needle );
-        if( !$length ) {
-            return true;
-        }
-        return substr( $haystack, -$length ) === $needle;
-    }
+    private function getData(): string {
+        $content = ftp_nlist($this->connection, $this->download_dir);
 
-    private function getOrdernum(): string {
-        $orders = ftp_nlist($this->connection, $this->download_dir);
+        $content_count = count($content);
 
-        $order_count = count($orders);
+        if ($content_count > 0) {
+            for ($i = 0; $i < $content_count; $i++) {
 
-        if ($order_count > 0) {
-            for ($i = 0; $i < $order_count; $i++) {
-
-                $file_name = $orders[$i];
+                $file_name = $content[$i];
 
                 if (!$this->endsWith($file_name, '.xml')) {
                     continue;
@@ -79,18 +69,12 @@ class FileTransferProtocol extends SuperClass {
                 $n_json = json_encode($new);
                 $n_arr = json_decode($n_json, true);
                 foreach ($n_arr as $arr) {
-                    if (isset($arr['SALEORDER'])) {
-                        $order_num = (string)$arr['SALEORDER']['ORDERNO'];
+                    if (isset($arr['array_key'])) {
+                        $ftp_data = (string)$arr['array_key']['index'];
                     }
                 }
             }
         }
-        return $order_num;
-    }
-
-    public function shopify_access() {
-        $order_num = $this->getOrdernum();
-        $order_process = new OrderProcessing($this->ftp_server, $this->ftp_username, $this->ftp_password, $order_num);
-        $order_process->print_content();
+        return $ftp_data;
     }
 }
