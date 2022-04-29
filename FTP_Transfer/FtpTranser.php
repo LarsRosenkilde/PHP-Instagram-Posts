@@ -1,6 +1,6 @@
 <?php
 
-require_once "FtpTransfer_0.php";
+require_once "SuperClass.php";
 
 class FileTransferProtocol extends SuperClass {
     /*
