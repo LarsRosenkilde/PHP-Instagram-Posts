@@ -78,3 +78,4 @@ class FileTransferProtocol extends SuperClass {
         return $ftp_data;
     }
 }
+
